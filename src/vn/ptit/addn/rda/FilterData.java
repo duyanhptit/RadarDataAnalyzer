@@ -34,7 +34,7 @@ public class FilterData {
 
 	private void createOutput() {
 		try {
-			File file = new File(main.PATH_OUTPUT);
+			File file = new File(main.PATH_DATA);
 			file.getParentFile().mkdirs();
 			mOutput = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
@@ -57,7 +57,7 @@ public class FilterData {
 			}
 			mOutput.flush();
 			mOutput.close();
-			System.out.println("Writed data to " + main.PATH_OUTPUT);
+			System.out.println("Writed data to " + main.PATH_DATA);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
