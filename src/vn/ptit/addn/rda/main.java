@@ -14,7 +14,10 @@ public class main {
 		// processingData.readData();
 
 		ImageProcess imageProcess = new ImageProcess();
+		// imageProcess.cannyProcess();
+		// imageProcess.medianBackground();
 		imageProcess.process();
+
 		// System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		// Mat gau =
 		// System.out.println(gau.dump());
