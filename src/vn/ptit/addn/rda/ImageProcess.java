@@ -13,6 +13,7 @@ public class ImageProcess {
 
 	private int mCount = 1;
 	private static final int THRESHOLD = 246;
+	private static final int THRESHOLD_STATIC_OBJECT = 100;
 	private static final double[] valueObject = { 0.0, 0.0, 0.0 };
 	private static final double[] valueBackground = { 255.0, 255.0, 255.0 };
 	private List<Mat> mats = new LinkedList<>();
@@ -109,6 +110,23 @@ public class ImageProcess {
 		}
 		Highgui.imwrite("data/medianBackground.jpg", medianMat);
 		System.out.println("Completed computing median background.");
+	}
+
+	public void staticObjectProcess() {
+		Mat medianBG = Highgui.imread("data/medianBackground.jpg");
+		System.out.println("Dectecting static object...");
+		Mat staticObjectImg = medianBG.clone();
+		for (int i = 0; i < 1366; i++) {
+			for (int j = 0; j < 3000; j++) {
+				if (getValue(medianBG.get(i, j)) > THRESHOLD_STATIC_OBJECT) {
+					staticObjectImg.put(i, j, valueObject);
+				} else {
+					staticObjectImg.put(i, j, valueBackground);
+				}
+			}
+		}
+		Highgui.imwrite("data/staticObject.jpg", staticObjectImg);
+		System.out.println("Completed detect static object.");
 	}
 
 	private Mat readRawImage(int num) {

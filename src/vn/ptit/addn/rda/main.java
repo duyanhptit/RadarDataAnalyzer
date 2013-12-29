@@ -16,7 +16,8 @@ public class main {
 		ImageProcess imageProcess = new ImageProcess();
 		// imageProcess.cannyProcess();
 		// imageProcess.medianBackground();
-		imageProcess.process();
+		// imageProcess.process();
+		imageProcess.staticObjectProcess();
 
 		// System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		// Mat gau =
