@@ -72,14 +72,14 @@ public class ProcessingData {
 			mRadarImg[position][i] = pulseData[i];
 		}
 		System.out.print("Vị trí mảng: " + position + " - ");
-		if (position == 683 && !mOverHalf) {
+		if (675 < position && position < 690 && !mOverHalf) {
 			mOverHalf = true;
 		}
 	}
 
 	private void saveRadarImg(int[][] mRadarImg) {
 		int[][] radaImg = convetGrayScale(mRadarImg);
-		File fileOut = new File("data/img" + String.format("%03d", mCount) + ".jpg");
+		File fileOut = new File("data/rawImage/img" + String.format("%03d", mCount) + ".jpg");
 		BufferedImage buffImage = new BufferedImage(3000, 1366, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < 1366; i++) {
 			for (int j = 0; j < 3000; j++) {
@@ -101,7 +101,7 @@ public class ProcessingData {
 		for (int i = 0; i < 1366; i++) {
 			for (int j = 0; j < 3000; j++) {
 				int value = mRadarImg[i][j] >> 4; // Chuyển 12 bit (4080) về 8 bit (256)
-				value = 255 - value; // Đảo ngược màu
+				// value = 255 - value; // Đảo ngược màu
 				value = value << 16 | value << 8 | value; // Chuyển tương thích với màu RGB
 				result[i][j] = value;
 			}

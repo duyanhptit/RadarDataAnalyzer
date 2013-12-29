@@ -10,8 +10,15 @@ public class main {
 		// FilterData filterData = new FilterData(PATH_RAW_DATA);
 		// filterData.filterRawData();
 
-		ProcessingData processingData = new ProcessingData(PATH_DATA);
-		processingData.readData();
+		// ProcessingData processingData = new ProcessingData(PATH_DATA);
+		// processingData.readData();
+
+		ImageProcess imageProcess = new ImageProcess();
+		imageProcess.process();
+		// System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		// Mat gau =
+		// System.out.println(gau.dump());
+
 	}
 
 }
