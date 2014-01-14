@@ -14,9 +14,9 @@ public class main {
 		// processingData.readData();
 
 		ImageProcess imageProcess = new ImageProcess();
-		// imageProcess.cannyProcess();
-		// imageProcess.medianBackground();
-		// imageProcess.process();
+		imageProcess.cannyProcess();
+		imageProcess.medianBackground();
+		imageProcess.process();
 		imageProcess.staticObjectProcess();
 
 		// System.loadLibrary(Core.NATIVE_LIBRARY_NAME);

@@ -78,17 +78,21 @@ public class ProcessingData {
 	}
 
 	private void saveRadarImg(int[][] mRadarImg) {
-		int[][] radaImg = convetGrayScale(mRadarImg);
+		saveCircleRadarImg(mRadarImg);
+		saveSquareRadarImg(mRadarImg);
+		mCount++;
+	}
+
+	private void saveCircleRadarImg(int[][] mRadarImg) {
+		int[][] radaImg = convertCircleImage(mRadarImg);
 		File fileOut = new File("data/rawImage/img" + String.format("%03d", mCount) + ".jpg");
-		BufferedImage buffImage = new BufferedImage(3000, 1366, BufferedImage.TYPE_INT_RGB);
-		for (int i = 0; i < 1366; i++) {
-			for (int j = 0; j < 3000; j++) {
+		BufferedImage buffImage = new BufferedImage(6000, 6000, BufferedImage.TYPE_INT_RGB);
+		for (int i = 0; i < 6000; i++) {
+			for (int j = 0; j < 6000; j++) {
 				buffImage.setRGB(j, i, radaImg[i][j]);
 			}
 		}
-		mCount++;
 		try {
-			// buffImage.setData(writerableRaster);
 			boolean status = ImageIO.write(buffImage, "jpg", fileOut);
 			System.out.println("Write file " + fileOut.getName() + " : " + status);
 		} catch (IOException e) {
@@ -96,17 +100,49 @@ public class ProcessingData {
 		}
 	}
 
-	private int[][] convetGrayScale(int[][] mRadarImg) {
-		int[][] result = new int[1366][3000];
+	private int[][] convertCircleImage(int[][] mRadarImg) {
+		int[][] result = new int[6000][6000];
+		for (int x = 0; x < 6000; x++) {
+			for (int y = 0; y < 6000; y++) {
+				if (Math.sqrt(Math.pow(x - 3000, 2) + Math.pow(y - 3000, 2)) > 3000) {
+					result[x][y] = convertToRGBValue(4080);
+				}
+			}
+		}
+		double alpha;
+		int x, y;
 		for (int i = 0; i < 1366; i++) {
+			alpha = 2 * Math.PI * (-i) / 1365;
 			for (int j = 0; j < 3000; j++) {
-				int value = mRadarImg[i][j] >> 4; // Chuyển 12 bit (4080) về 8 bit (256)
-				// value = 255 - value; // Đảo ngược màu
-				value = value << 16 | value << 8 | value; // Chuyển tương thích với màu RGB
-				result[i][j] = value;
+				x = (int) Math.round(3000 + j * Math.sin(alpha));
+				y = (int) Math.round(3000 + j * Math.cos(alpha));
+				result[x][y] = convertToRGBValue(mRadarImg[i][j]);
 			}
 		}
 		return result;
+	}
+
+	private void saveSquareRadarImg(int[][] mRadarImg) {
+		File fileOut = new File("data/squareImage/img" + String.format("%03d", mCount) + ".jpg");
+		BufferedImage buffImage = new BufferedImage(3000, 1366, BufferedImage.TYPE_INT_RGB);
+		for (int i = 0; i < 1366; i++) {
+			for (int j = 0; j < 3000; j++) {
+				buffImage.setRGB(j, i, convertToRGBValue(mRadarImg[i][j]));
+			}
+		}
+		try {
+			boolean status = ImageIO.write(buffImage, "jpg", fileOut);
+			System.out.println("Write file " + fileOut.getName() + " : " + status);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int convertToRGBValue(int value) {
+		int RGBValue = value >> 4; // Chuyển 12 bit (4095) về 8 bit (255)
+		// result = 255 - result; // Đảo ngược màu
+		RGBValue = RGBValue << 16 | RGBValue << 8 | RGBValue; // Chuyển giá trị Gray Scale với kiểu RGB
+		return RGBValue;
 	}
 
 	/*
