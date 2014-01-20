@@ -9,6 +9,12 @@ import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
+
 public class ProcessingData {
 
 	private String mPathData;
@@ -84,28 +90,42 @@ public class ProcessingData {
 	}
 
 	private void saveCircleRadarImg(int[][] mRadarImg) {
-		int[][] radaImg = convertCircleImage(mRadarImg);
-		File fileOut = new File("data/rawImage/img" + String.format("%03d", mCount) + ".jpg");
-		BufferedImage buffImage = new BufferedImage(6000, 6000, BufferedImage.TYPE_INT_RGB);
-		for (int i = 0; i < 6000; i++) {
-			for (int j = 0; j < 6000; j++) {
-				buffImage.setRGB(j, i, radaImg[i][j]);
-			}
-		}
-		try {
-			boolean status = ImageIO.write(buffImage, "jpg", fileOut);
-			System.out.println("Write file " + fileOut.getName() + " : " + status);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Mat radarMat = convertCircleImage(mRadarImg);
+		radarMat = downSizeImage(radarMat);
+		radarMat = downSizeImage(radarMat);
+
+		String pathImg = "data/rawImage/img" + String.format("%03d", mCount) + ".jpg";
+		Highgui.imwrite(pathImg, radarMat);
+		System.out.println("Completed write: " + pathImg);
+
+		// File fileOut = new File("data/rawImage/img" + String.format("%03d", mCount) + ".jpg");
+		// BufferedImage buffImage = new BufferedImage(6000, 6000, BufferedImage.TYPE_INT_RGB);
+		// for (int i = 0; i < 6000; i++) {
+		// for (int j = 0; j < 6000; j++) {
+		// buffImage.setRGB(j, i, radaImg[i][j]);
+		// }
+		// }
+		// try {
+		// boolean status = ImageIO.write(buffImage, "jpg", fileOut);
+		// System.out.println("Write file " + fileOut.getName() + " : " + status);
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 
-	private int[][] convertCircleImage(int[][] mRadarImg) {
-		int[][] result = new int[6000][6000];
+	// Giảm kích thước ảnh bằng 1 nửa. ĐK |dsize * 2 - ssize| <= 2
+	private Mat downSizeImage(Mat mat) {
+		Mat smallMat = new Mat();
+		Imgproc.pyrDown(mat, smallMat, new Size(mat.cols() / 2, mat.rows() / 2));
+		return smallMat;
+	}
+
+	private Mat convertCircleImage(int[][] mRadarImg) {
+		Mat mat = new Mat(6000, 6000, CvType.CV_8UC1);
 		for (int x = 0; x < 6000; x++) {
 			for (int y = 0; y < 6000; y++) {
 				if (Math.sqrt(Math.pow(x - 3000, 2) + Math.pow(y - 3000, 2)) > 3000) {
-					result[x][y] = convertToRGBValue(4080);
+					mat.put(x, y, setValue(255));
 				}
 			}
 		}
@@ -116,10 +136,10 @@ public class ProcessingData {
 			for (int j = 0; j < 3000; j++) {
 				x = (int) Math.round(3000 + j * Math.sin(alpha));
 				y = (int) Math.round(3000 + j * Math.cos(alpha));
-				result[x][y] = convertToRGBValue(mRadarImg[i][j]);
+				mat.put(x, y, setValue(mRadarImg[i][j] >> 4));
 			}
 		}
-		return result;
+		return mat;
 	}
 
 	private void saveSquareRadarImg(int[][] mRadarImg) {
@@ -168,6 +188,15 @@ public class ProcessingData {
 	// 0x1A2B = 2B(LByte) -> 1A (UByte)
 	private int getIntOfLitterEndian(byte L_Byte, byte U_Byte) {
 		return (U_Byte & 0xFF) << 8 | (L_Byte & 0xFF);
+	}
+
+	private double[] setValue(int intValue) {
+		double[] doubleValue = new double[3];
+		doubleValue[0] = intValue;
+		doubleValue[1] = intValue;
+		doubleValue[2] = intValue;
+		return doubleValue;
+
 	}
 
 }
