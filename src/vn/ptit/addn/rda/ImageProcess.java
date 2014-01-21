@@ -3,7 +3,6 @@ package vn.ptit.addn.rda;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
@@ -20,7 +19,6 @@ public class ImageProcess {
 	private List<Mat> mats = new LinkedList<>();
 
 	public ImageProcess() {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
 	public void process() {
@@ -38,11 +36,11 @@ public class ImageProcess {
 	public void cannyProcess() {
 		mCount = 1;
 		while (mCount <= NUM_OF_IMG) {
-			Mat img = readRawImage(mCount);
+			Mat img = readCircleImage(mCount);
 			Mat outFilter = medianFilter(img);
 
 			Mat outCanny = new Mat();
-			Imgproc.Canny(outFilter, outCanny, 75, 150);
+			Imgproc.Canny(outFilter, outCanny, 40, 80);
 			writeProcImage(outCanny, mCount);
 
 			mCount++;
@@ -51,14 +49,14 @@ public class ImageProcess {
 
 	private Mat medianFilter(Mat img) {
 		Mat out = new Mat();
-		Imgproc.GaussianBlur(img, out, new Size(7.0, 7.0), 2.0);
+		Imgproc.GaussianBlur(img, out, new Size(5.0, 5.0), 0);
 		return out;
 	}
 
 	private Mat backgroundSubtraction(Mat img, Mat nextImg) {
 		Mat result = img.clone();
-		for (int i = 0; i < 6000; i++) {
-			for (int j = 0; j < 6000; j++) {
+		for (int i = 0; i < 1500; i++) {
+			for (int j = 0; j < 1500; j++) {
 				if (isInsideCircle(i, j)) {
 					double[] valueImg = img.get(i, j);
 					double[] valueNextImg = nextImg.get(i, j);
@@ -77,8 +75,8 @@ public class ImageProcess {
 
 	private Mat backgroundSubtraction1(Mat img, Mat background) {
 		Mat result = img.clone();
-		for (int i = 0; i < 6000; i++) {
-			for (int j = 0; j < 6000; j++) {
+		for (int i = 0; i < 1500; i++) {
+			for (int j = 0; j < 1500; j++) {
 				if (isInsideCircle(i, j)) {
 					int valueImg = getValue(img.get(i, j));
 					int valueBG = getValue(background.get(i, j));
@@ -103,8 +101,8 @@ public class ImageProcess {
 		}
 		Mat medianMat = mats.get(0).clone();
 		System.out.println("Processing computing median background...");
-		for (int i = 0; i < 6000; i++) {
-			for (int j = 0; j < 6000; j++) {
+		for (int i = 0; i < 1500; i++) {
+			for (int j = 0; j < 1500; j++) {
 				if (isInsideCircle(i, j)) {
 					int total = 0;
 					for (Mat mat : mats) {
@@ -123,8 +121,8 @@ public class ImageProcess {
 		Mat medianBG = Highgui.imread("data/medianBackground.jpg");
 		System.out.println("Dectecting static object...");
 		Mat staticObjectImg = medianBG.clone();
-		for (int i = 0; i < 6000; i++) {
-			for (int j = 0; j < 6000; j++) {
+		for (int i = 0; i < 1500; i++) {
+			for (int j = 0; j < 1500; j++) {
 				if (isInsideCircle(i, j)) {
 					if (getValue(medianBG.get(i, j)) > THRESHOLD_STATIC_OBJECT) {
 						staticObjectImg.put(i, j, valueObject);
@@ -138,8 +136,8 @@ public class ImageProcess {
 		System.out.println("Completed detect static object.");
 	}
 
-	private Mat readRawImage(int num) {
-		String pathImg = "data/rawImage/img" + String.format("%03d", num) + ".jpg";
+	private Mat readCircleImage(int num) {
+		String pathImg = "data/circleImage/img" + String.format("%03d", num) + ".jpg";
 		System.out.println("Completed read: " + pathImg);
 		return Highgui.imread(pathImg);
 	}
@@ -176,7 +174,7 @@ public class ImageProcess {
 	}
 
 	private boolean isInsideCircle(int x, int y) {
-		if (Math.sqrt(Math.pow(x - 3000, 2) + Math.pow(y - 3000, 2)) > 3000) {
+		if (Math.sqrt(Math.pow(x - 750, 2) + Math.pow(y - 750, 2)) > 750) {
 			return false;
 		}
 		return true;

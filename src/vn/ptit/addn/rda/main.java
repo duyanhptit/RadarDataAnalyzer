@@ -14,17 +14,17 @@ public class main {
 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-		ProcessingData processingData = new ProcessingData(PATH_DATA);
-		processingData.readData();
+		// ProcessingData processingData = new ProcessingData(PATH_DATA);
+		// processingData.readData();
 
-		// ImageProcess imageProcess = new ImageProcess();
-		// imageProcess.cannyProcess();
+		ImageProcess imageProcess = new ImageProcess();
+		imageProcess.cannyProcess();
 		// imageProcess.medianBackground();
 		// imageProcess.process();
 		// imageProcess.staticObjectProcess();
 
 		// System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		// Mat gau =
+		// Mat gau = Imgproc.getGaussianKernel(5, 0);
 		// System.out.println(gau.dump());
 
 	}

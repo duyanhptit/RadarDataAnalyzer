@@ -85,7 +85,7 @@ public class ProcessingData {
 
 	private void saveRadarImg(int[][] mRadarImg) {
 		saveCircleRadarImg(mRadarImg);
-		saveSquareRadarImg(mRadarImg);
+		// saveSquareRadarImg(mRadarImg);
 		mCount++;
 	}
 
@@ -94,11 +94,11 @@ public class ProcessingData {
 		radarMat = downSizeImage(radarMat);
 		radarMat = downSizeImage(radarMat);
 
-		String pathImg = "data/rawImage/img" + String.format("%03d", mCount) + ".jpg";
+		String pathImg = "data/circleImage/img" + String.format("%03d", mCount) + ".jpg";
 		Highgui.imwrite(pathImg, radarMat);
 		System.out.println("Completed write: " + pathImg);
 
-		// File fileOut = new File("data/rawImage/img" + String.format("%03d", mCount) + ".jpg");
+		// File fileOut = new File("data/circleImage/img" + String.format("%03d", mCount) + ".jpg");
 		// BufferedImage buffImage = new BufferedImage(6000, 6000, BufferedImage.TYPE_INT_RGB);
 		// for (int i = 0; i < 6000; i++) {
 		// for (int j = 0; j < 6000; j++) {
