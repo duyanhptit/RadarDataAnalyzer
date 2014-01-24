@@ -14,6 +14,9 @@ public class ImageProcess {
 	private static final int NUM_OF_IMG = 35;
 	private static final int THRESHOLD = 246;
 	private static final int THRESHOLD_STATIC_OBJECT = 100;
+	private static final int THRESHOLD_SPLIT = 20;
+	private static final int THRESHOLE_CANNY_HIGH = 80;
+	private static final int THRESHOLE_CANNY_LOW = 40;
 	private static final double[] valueObject = { 0.0, 0.0, 0.0 };
 	private static final double[] valueBackground = { 255.0, 255.0, 255.0 };
 	private List<Mat> mats = new LinkedList<>();
@@ -39,9 +42,13 @@ public class ImageProcess {
 			Mat img = readCircleImage(mCount);
 			Mat outFilter = medianFilter(img);
 
-			Mat outCanny = new Mat();
-			Imgproc.Canny(outFilter, outCanny, 40, 80);
-			writeProcImage(outCanny, mCount);
+			Mat outSplit = new Mat();
+			// Imgproc.Canny(outFilter, outCanny, THRESHOLE_CANNY_LOW, THRESHOLE_CANNY_HIGH);
+			Imgproc.threshold(outFilter, outSplit, THRESHOLD_SPLIT, 255, Imgproc.THRESH_BINARY);
+
+			outFilter = medianFilter(outSplit);
+			Imgproc.threshold(outFilter, outSplit, 120, 255, Imgproc.THRESH_BINARY);
+			writeProcImage(outSplit, mCount);
 
 			mCount++;
 		}
@@ -49,7 +56,8 @@ public class ImageProcess {
 
 	private Mat medianFilter(Mat img) {
 		Mat out = new Mat();
-		Imgproc.GaussianBlur(img, out, new Size(5.0, 5.0), 0);
+		// Imgproc.GaussianBlur(img, out, new Size(5.0, 5.0), 3.0);
+		Imgproc.blur(img, out, new Size(9, 9));
 		return out;
 	}
 

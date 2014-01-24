@@ -92,7 +92,6 @@ public class ProcessingData {
 	private void saveCircleRadarImg(int[][] mRadarImg) {
 		Mat radarMat = convertCircleImage(mRadarImg);
 		radarMat = downSizeImage(radarMat);
-		radarMat = downSizeImage(radarMat);
 
 		String pathImg = "data/circleImage/img" + String.format("%03d", mCount) + ".jpg";
 		Highgui.imwrite(pathImg, radarMat);
@@ -121,10 +120,10 @@ public class ProcessingData {
 	}
 
 	private Mat convertCircleImage(int[][] mRadarImg) {
-		Mat mat = new Mat(6000, 6000, CvType.CV_8UC1);
-		for (int x = 0; x < 6000; x++) {
-			for (int y = 0; y < 6000; y++) {
-				if (Math.sqrt(Math.pow(x - 3000, 2) + Math.pow(y - 3000, 2)) > 3000) {
+		Mat mat = new Mat(3000, 3000, CvType.CV_8UC1);
+		for (int x = 0; x < 3000; x++) {
+			for (int y = 0; y < 3000; y++) {
+				if (Math.sqrt(Math.pow(x - 1500, 2) + Math.pow(y - 1500, 2)) > 1500) {
 					mat.put(x, y, setValue(255));
 				}
 			}
@@ -133,9 +132,9 @@ public class ProcessingData {
 		int x, y;
 		for (int i = 0; i < 1366; i++) {
 			alpha = 2 * Math.PI * (-i) / 1365;
-			for (int j = 0; j < 3000; j++) {
-				x = (int) Math.round(3000 + j * Math.sin(alpha));
-				y = (int) Math.round(3000 + j * Math.cos(alpha));
+			for (int j = 0; j < 1500; j++) {
+				x = (int) Math.round(1500 + j * Math.sin(alpha));
+				y = (int) Math.round(1500 + j * Math.cos(alpha));
 				mat.put(x, y, setValue(mRadarImg[i][j] >> 4));
 			}
 		}
