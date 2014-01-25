@@ -8,6 +8,8 @@ public class main {
 	private static final String PATH_RAW_DATA = "D:/Radar data/data";
 	public static final String PATH_DATA = "data/radarData.log";
 
+	private static final double[] valueObject = { 0, 0, 255 };
+
 	public static void main(String[] args) {
 		// FilterData filterData = new FilterData(PATH_RAW_DATA);
 		// filterData.filterRawData();
@@ -18,14 +20,19 @@ public class main {
 		// processingData.readData();
 
 		ImageProcess imageProcess = new ImageProcess();
-		imageProcess.cannyProcess();
+		// imageProcess.filterProcess();
 		// imageProcess.medianBackground();
-		// imageProcess.process();
+		imageProcess.process();
 		// imageProcess.staticObjectProcess();
 
 		// System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		// Mat gau = Imgproc.getGaussianKernel(5, 0);
-		// System.out.println(gau.dump());
+		// Mat mat = new Mat(100, 100, CvType.CV_8UC3);
+		// for (int i = 0; i < mat.rows(); i++) {
+		// for (int j = 0; j < mat.cols(); j++) {
+		// mat.put(i, j, valueObject);
+		// }
+		// }
+		// Highgui.imwrite("data/demo.jpg", mat);
 
 	}
 

@@ -22,6 +22,14 @@ public class ProcessingData {
 	private int[][] mRadarImg = new int[1366][3000]; // 16383 / 12 = 1365
 	private int[] mPulseData = new int[6 * 510]; // actual is 3000
 	private int[] mPreFrame = new int[3 + 510];
+	private int[][] mQueue = new int[5][3000];
+
+	private int[][] mMatrixGauss = { { 2, 4, 5, 4, 2 },//
+			{ 4, 9, 12, 9, 4 },//
+			{ 5, 12, 15, 12, 5 },//
+			{ 2, 4, 5, 4, 2 },//
+			{ 4, 9, 12, 9, 4 } };
+	private static final double THRESHOLD = 5;
 
 	private boolean mOverHalf = false;
 	private int mCount = 1;
@@ -42,7 +50,7 @@ public class ProcessingData {
 				if (PulseID == firstPulseID && mOverHalf) { // condition create new radar image
 					// Save Rada Image and create New Array
 					saveRadarImg(mRadarImg);
-					mRadarImg = new int[1500][3000];
+					// mRadarImg = new int[1500][3000];
 					mOverHalf = false;
 					// in ảnh và reset mRadarImg
 				}
@@ -60,7 +68,7 @@ public class ProcessingData {
 
 		if (frameInt[1] != mPreFrame[1]) { // so sánh PID: nếu khác xung
 			int position = PulseCode / 12;
-			addToRadaImg(mPulseData, position);
+			addPulseToRadaImg(mPulseData, position);
 			mPulseData = new int[6 * 510];
 			System.out.println("Mã góc: " + PulseCode);
 		}
@@ -73,19 +81,42 @@ public class ProcessingData {
 		return frameInt;
 	}
 
-	private void addToRadaImg(int[] pulseData, int position) {
-		for (int i = 0; i < 3000; i++) {
-			mRadarImg[position][i] = pulseData[i];
-		}
+	private void addPulseToRadaImg(int[] pulseData, int position) {
+		mRadarImg[position] = filterData(pulseData);
+
 		System.out.print("Vị trí mảng: " + position + " - ");
 		if (675 < position && position < 690 && !mOverHalf) {
 			mOverHalf = true;
 		}
 	}
 
+	private int[] filterData(int[] pulseData) {
+		for (int i = 0; i < 5; i++) {
+			if (i == 4) {
+				mQueue[i] = pulseData;
+			} else {
+				mQueue[i] = mQueue[i + 1];
+			}
+		}
+		int[] temp = pulseData;
+		for (int k = 0; k < (3000 - 5); k++) {
+			double avg = 0;
+			for (int i = 0; i < 5; i++) {
+				for (int j = 0; j < 5; j++) {
+					avg += mQueue[j][k + i] / 25;
+				}
+			}
+			double distance = (mQueue[2][k + 2] - avg) > 0 ? (mQueue[2][k + 2] - avg) : (avg - mQueue[2][k + 2]);
+			if (distance > THRESHOLD) {
+				temp[k + 2] = (int) Math.round(avg);
+			}
+		}
+		return temp;
+	}
+
 	private void saveRadarImg(int[][] mRadarImg) {
-		saveCircleRadarImg(mRadarImg);
-		// saveSquareRadarImg(mRadarImg);
+		// saveCircleRadarImg(mRadarImg);
+		saveSquareRadarImg(mRadarImg);
 		mCount++;
 	}
 
